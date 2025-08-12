@@ -1,0 +1,153 @@
+<!-- 新增：姓名與興趣輸入卡片 -->
+<div class="card" id="profileCard" style="margin-top:20px;">
+  <h3>建立個人檔案</h3>
+  <div class="row">
+    <input id="nameInput" placeholder="輸入你的姓名" style="flex:1" />
+  </div>
+  <div class="row" style="margin-top:8px;">
+    <input id="hobbyInput" placeholder="輸入你的興趣" style="flex:1" />
+    <button class="accent" id="submitProfile">送出</button>
+  </div>
+  <div id="chatArea" style="margin-top:12px; padding:10px; background:#f0f4ff; border-radius:8px; display:none;"></div>
+</div>
+
+<!-- 加入動畫樣式 -->
+<style>
+  .fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .confetti {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    animation: fadeOut 2s ease-in forwards;
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+</style>
+
+<!-- JavaScript: 姓名興趣互動 -->
+<script>
+  document.getElementById('submitProfile').addEventListener('click', () => {
+    const name = document.getElementById('nameInput').value.trim();
+    const hobby = document.getElementById('hobbyInput').value.trim();
+    const chat = document.getElementById('chatArea');
+
+    if (!name || !hobby) {
+      alert('請填寫姓名和興趣！');
+      return;
+    }
+
+    // 顯示對話
+    chat.style.display = 'block';
+    chat.classList.add('fade-in');
+    chat.innerHTML = `
+      👋 嗨，<strong>${name}</strong>！<br/>
+      🎉 聽起來你喜歡 <strong>${hobby}</strong>，真有趣！<br/>
+      🥳 讓我們一起加油吧！
+    `;
+
+    // 重置輸入
+    document.getElementById('nameInput').value = '';
+    document.getElementById('hobbyInput').value = '';
+
+    // 加入簡單的動畫：灑紙花
+    launchConfetti();
+  });
+
+  function launchConfetti() {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.innerHTML = '🎊🎉✨🎈💫🎊🎉✨🎈💫';
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 2000);
+  }
+</script>
+
+<div class="card" id="orderBox" style="margin-top: 30px;">
+  <h3>🛒 香氛商品訂購單</h3>
+  <div class="row">
+    <select id="productSelect" style="flex:1">
+      <option value="" disabled selected>請選擇香氛</option>
+      <option value="玫瑰花香">玫瑰花香</option>
+      <option value="薰衣草">薰衣草</option>
+      <option value="尤加利">尤加利</option>
+      <option value="檀香木">檀香木</option>
+    </select>
+    <input id="quantityInput" type="number" min="1" placeholder="數量" style="width: 80px;">
+    <button id="addOrder">加入</button>
+  </div>
+
+  <ul id="orderList"></ul>
+  <div id="totalPrice" class="small" style="margin-top: 10px; font-weight:bold;"></div>
+</div>
+
+<script>
+  (() => {
+    const productPrices = {
+      "玫瑰花香": 350,
+      "薰衣草": 300,
+      "尤加利": 320,
+      "檀香木": 380
+    };
+
+    const select = document.getElementById("productSelect");
+    const qtyInput = document.getElementById("quantityInput");
+    const addOrder = document.getElementById("addOrder");
+    const orderList = document.getElementById("orderList");
+    const totalDisplay = document.getElementById("totalPrice");
+
+    let orders = [];
+
+    function renderOrders() {
+      let total = 0;
+      orderList.innerHTML = orders.map((o, i) => {
+        const subtotal = o.qty * o.price;
+        total += subtotal;
+        return `
+          <li>
+            <span style="flex:1">${o.name} x ${o.qty}（$${o.price}/件）</span>
+            <span>$${subtotal}</span>
+            <button data-i="${i}" class="delOrder">刪</button>
+          </li>
+        `;
+      }).join('');
+
+      totalDisplay.textContent = total > 0 ? `總計：$${total} 元` : '';
+    }
+
+    addOrder.addEventListener('click', () => {
+      const name = select.value;
+      const qty = parseInt(qtyInput.value, 10);
+      if (!name || isNaN(qty) || qty <= 0) return alert("請正確選擇香氛並輸入數量");
+
+      const price = productPrices[name];
+      orders.push({ name, qty, price });
+      qtyInput.value = '';
+      select.selectedIndex = 0;
+      renderOrders();
+    });
+
+    orderList.addEventListener('click', e => {
+      if (e.target.classList.contains('delOrder')) {
+        const i = +e.target.dataset.i;
+        orders.splice(i, 1);
+        renderOrders();
+      }
+    });
+  })();
+</script>

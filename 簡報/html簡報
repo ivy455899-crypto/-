@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>我的香氣清單</title>
+    <style>
+        body {
+            font-family: "Noto Sans TC", sans-serif;
+            background: #f3f9f5;
+            color: #1f2937;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            background-image: linear-gradient(to bottom, #f3f9f5, #e6f4ea);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        #leaves-container {
+            pointer-events: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: visible;
+            z-index: 9999;
+        }
+
+        .leaf {
+            position: absolute;
+            top: -50px;
+            width: 30px;
+            height: 30px;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/616/616408.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+            animation-name: fall, sway;
+            animation-timing-function: linear, ease-in-out;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        @keyframes sway {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(15px); }
+        }
+
+        .card {
+            background: #ffffffd0;
+            border: 1px solid #d1e7dd;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        input {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #c8e6c9;
+        }
+
+        button {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            background: #81c784;
+            color: white;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #66bb6a;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        li {
+            background: #ffffff;
+            border: 1px solid #c8e6c9;
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .sparkle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            animation: sparkle 0.8s ease-out;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.8) 10%, transparent 11%);
+            background-size: 10px 10px;
+        }
+
+        @keyframes sparkle {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        .small {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .message {
+            margin-top: 10px;
+            color: #4caf50;
+            font-weight: bold;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        #music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #81c784cc;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            user-select: none;
+            transition: background 0.3s;
+        }
+        #music-control:hover {
+            background: #66bb6a;
+        }
+    </style>
+</head>
+<body>
+    <div id="leaves-container"></div>
+
+    <div class="card" id="scentBox">
+        <div class="row">
+            <input id="inp" placeholder="你喜歡的香氣是？" />
+            <button id="add">新增香氣</button>
+        </div>
+        <ul id="list"></ul>
+        <div id="msg" class="message"></div>
+        <div class="small">點擊文字可編輯；Enter 也可新增。</div>
+    </div>
+
+    <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7895b33260.mp3?filename=relaxing-nature-ambient-14517.mp3" loop preload="auto"></audio>
+    <audio id="chime" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3dc6238a0a.mp3?filename=magic-wood-ambient-14433.mp3" preload="auto"></audio>
+    <button id="music-control">播放音樂 🎵</button>
+
+    <script>
+        (() => {
+            const root = document.querySelector('#scentBox');
+            const $ = (q) => root.querySelector(q);
+            const KEY = 'scent_list';
+            const inp = $('#inp');
+            const add = $('#add');
+            const list = $('#list');
+            const msg = $('#msg');
+            const chime = document.getElementById('chime');
+            const bgMusic = document.getElementById('bg-music');
+            const musicControl = document.getElementById('music-control');
+            const leavesContainer = document.getElementById('leaves-container');
+
+            let items = [];
+            try { items = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { items = []; }
+
+            function save() {
+                localStorage.setItem(KEY, JSON.stringify(items));
+            }
+
+            function sparkle(el) {
+                const spark = document.createElement('div');
+                spark.className = 'sparkle';
+                el.appendChild(spark);
+                setTimeout(() => spark.remove(), 1000);
+            }
+
+            function render() {
+                list.innerHTML = items.map((t, i) => `
+                    <li data-i="${i}">
+                        <span contenteditable style="flex:1">${t.text}</span>
+                        <button class="del">刪</button>
+                    </li>
+                `).join('');
+            }
+
+            function showMessage(text) {
+                msg.textContent = `💐 香氣加入成功：${text}`;
+                msg.style.opacity = 1;
+                setTimeout(() => { msg.textContent = ''; }, 2500);
+            }
+
+            add.addEventListener('click', () => {
+                const v = inp.value.trim();
+                if (!v) return;
+                items.push({ text: v });
+                inp.value = '';
+                save();
+                render();
+
+                showMessage(v);
+                chime.play();
+                sparkle(list.lastElementChild);
+            });
+
+            inp.addEventListener('keydown', e => {
+                if (e.key === 'Enter') add.click();
+            });
+
+            list.addEventListener('click', e => {
+                const li = e.target.closest('li');
+                if (!li) return;
+                const i = +li.dataset.i;
+                if (e.target.classList.contains('del')) {
+                    items.splice(i, 1);
+                    save(); render();
+                }
+            });
+
+            list.addEventListener('input', e => {
+                const li = e.target.closest('li');
+                if (!li || e.target.tagName !== 'SPAN') return;
+                items[+li.dataset.i].text = e.target.textContent.trim();
+                save();
+            });
+
+            render();
+
+            let playing = false;
+            musicControl.addEventListener('click', () => {
+                if (playing) {
+                    bgMusic.pause();
+                    musicControl.textContent = '播放音樂 🎵';
+                } else {
+                    bgMusic.play();
+                    musicControl.textContent = '暫停音樂 ⏸️';
+                }
+                playing = !playing;
+            });
+
+            function createLeaf() {
+                const leaf = document.createElement('div');
+                leaf.className = 'leaf';
+                leaf.style.left = Math.random() * window.innerWidth + 'px';
+                const fallDuration = 8000 + Math.random() * 4000;
+                const swayDuration = 2000 + Math.random() * 2000;
+                leaf.style.animationDuration = `${fallDuration}ms, ${swayDuration}ms`;
+                leavesContainer.appendChild(leaf);
+                setTimeout(() => {
+                    leaf.remove();
+                }, fallDuration);
+            }
+
+            setInterval(createLeaf, 500);
+        })();
+    </script>
+</body>
+</html>

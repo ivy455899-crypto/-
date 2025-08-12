@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>hui ❤️ 手作 E品集</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+
+    header {
+      background: #dceef2;
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      color: #2c7a7b;
+    }
+
+    nav {
+      margin-top: 10px;
+    }
+
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #00796b;
+      font-weight: bold;
+    }
+
+    .section {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: #2f855a;
+    }
+
+    footer {
+      background: #e0f2f1;
+      padding: 20px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: 40px;
+    }
+
+    .certs {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .certs img {
+      width: 120px;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    form {
+      margin-top: 10px;
+    }
+
+    input, textarea {
+      padding: 8px;
+      margin: 6px 0;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: #4db6ac;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #009688;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🟩 Header -->
+  <header>
+    <h1>hui ❤️ 手作 E品集</h1>
+    <nav>
+      <a href="https://lin.ee/vreF6jA" target="_blank">官方 LINE</a>
+      <a href="#">賣場連結（待補）</a>
+      <a href="#">部落格（未來開放）</a>
+      <a href="#">其他連結</a>
+    </nav>
+  </header>
+
+  <!-- 🟨 分類主區 -->
+  <section class="section" id="categories">
+    <h2>🌿 商品分類</h2>
+    <div class="category-grid">
+      <div class="card">
+        <h3>佛要金裝</h3>
+        <p>佛經/咒語書套，讓心經也有專屬的保護。</p>
+      </div>
+      <div class="card">
+        <h3>咒語祈福</h3>
+        <p>平安符、祈福包，傳遞正念與祝福。</p>
+      </div>
+      <div class="card">
+        <h3>香氛祝福</h3>
+        <p>擴香石、精油瓶，氣味也是種療癒語言。</p>
+      </div>
+      <div class="card">
+        <h3>手作療癒</h3>
+        <p>串珠、拼布、毛線編，心靈的靜謐時光。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🟦 關於 hui i -->
+  <section class="section" id="about">
+    <h2>✨ 關於 hui i</h2>
+    <p>從自然中獲得靈感，結合芳療與手作藝術，傳遞每一份專屬的心意與祝福。</p>
+    <div class="certs">
+      <img src="your_ifpa_cert.jpg" alt="IFPA 證書" />
+      <img src="your_naha_cert.jpg" alt="NAHA 證書" />
+    </div>
+  </section>
+
+  <!-- 🟥 Footer -->
+  <footer id="footer">
+    <h3>聯絡 hui</h3>
+    <p>Email：<a href="mailto:your@email.com">your@email.com</a></p>
+    <p>LINE：<a href="https://lin.ee/vreF6jA" target="_blank">https://lin.ee/vreF6jA</a></p>
+
+    <form onsubmit="event.preventDefault(); alert('表單已送出！');">
+      <input type="text" placeholder="您的姓名" required />
+      <input type="email" placeholder="電子郵件" required />
+      <textarea rows="4" placeholder="想說的話..." required></textarea>
+      <button type="submit">送出</button>
+    </form>
+
+    <p style="margin-top:20px;">© 2025 hui ❤️ 手作 E品集. 保留所有權利。</p>
+  </footer>
+
+</body>
+</html>
